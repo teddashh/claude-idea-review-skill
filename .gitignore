@@ -1,0 +1,6 @@
+.idea-review/
+.*-review/
+__pycache__/
+*.pyc
+.env
+.DS_Store
