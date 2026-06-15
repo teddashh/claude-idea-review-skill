@@ -70,13 +70,75 @@ Skill 會保存本地 review workspace：
 
 `report.html` 是靜態可列印報告。用瀏覽器打開後，可以按 Print / Save PDF。`report.md` 是完整 Markdown 版本。
 
+## Requirements / 需求
+
+- **Claude Code** — the review panel runs inside it.
+- **Python 3.8+** on your `PATH` — only the helper scripts use it (workspace scaffold + report rendering). The review reasoning itself runs in Claude, so Python is not needed for the analysis.
+- **Optional providers** for multi-model cross-checking: Codex CLI, Gemini CLI, and/or Grok CLI. None are required — if a provider is missing, the skill runs fully on Claude and simulates it.
+
+需求：
+
+- **Claude Code** — review panel 在它裡面跑。
+- **Python 3.8+**（要在 `PATH` 上）— 只有輔助 scripts 會用到（建立 workspace、產生報告）。實際 review 推理是 Claude 在做，所以分析本身不需要 Python。
+- **選用 provider**（多模型交叉驗證）：Codex CLI、Gemini CLI、Grok CLI。都不是必要的；缺哪個，skill 就用 Claude 模擬該 provider 照樣跑完。
+
 ## Install / 安裝
 
-Use this repo as a Claude Code skill package. The root contains `SKILL.md`, so you can copy or zip this repo directory as the skill.
+Install as a personal Claude Code skill by cloning into your skills directory:
 
-這個 repo 本身就是 Claude Code skill package。root 有 `SKILL.md`，所以可以直接 copy 或 zip 這個 repo 資料夾作為 skill。
+把這個 repo clone 到 Claude Code 的 skills 目錄，當作個人 skill 安裝：
+
+```bash
+# macOS / Linux
+git clone https://github.com/teddashh/claude-idea-review-skill.git \
+  ~/.claude/skills/idea-review-panel
+```
+
+```powershell
+# Windows (PowerShell)
+git clone https://github.com/teddashh/claude-idea-review-skill.git `
+  "$env:USERPROFILE\.claude\skills\idea-review-panel"
+```
+
+Then **restart Claude Code** (or start a new session). Skills are loaded at startup, so a session that was already running will not see a newly added skill.
+
+然後**重啟 Claude Code**（或開新 session）。Skills 只在啟動時載入，所以還在跑的舊 session 不會看到剛裝好的 skill。
+
+To use it inside one project instead of globally, clone into that project's `.claude/skills/idea-review-panel/` directory.
+
+如果只想在某個專案裡用、不想全域安裝，就 clone 到該專案的 `.claude/skills/idea-review-panel/` 底下。
+
+Update later with:
+
+之後更新：
+
+```bash
+git -C ~/.claude/skills/idea-review-panel pull
+```
+
+> **Windows note:** the helper scripts call `python3`, but on Windows the command is usually `python`. If typing `python` opens the Microsoft Store, that is the placeholder alias, not a real interpreter — install Python from [python.org](https://www.python.org/downloads/) or run `winget install Python.Python.3.12`, then reopen your terminal.
+>
+> **Windows 提醒：** 輔助 scripts 用 `python3`，但 Windows 上通常是 `python`。如果打 `python` 跳出 Microsoft Store，那是佔位捷徑、不是真的 Python — 請從 [python.org](https://www.python.org/downloads/) 安裝，或執行 `winget install Python.Python.3.12`，然後重開終端機。
+
+## Usage / 怎麼用
+
+After restarting, just ask Claude Code to validate an idea — the skill triggers from its description:
+
+重啟後，直接請 Claude Code 驗證一個 idea，skill 會依描述自動觸發：
+
+```text
+幫我驗證這個點子：<你的 idea>
+```
+
+Default is 5 rounds; ask for 12 or 16 for deeper analysis. The review workspace is saved under `.idea-review/<slug>/` in your current working directory.
+
+預設 5 輪；想更深入可以要求 12 或 16 輪。Review workspace 會存在目前工作目錄的 `.idea-review/<slug>/` 底下。
 
 ## Helper Scripts / 輔助 scripts
+
+The skill runs these for you; you can also run them manually (use `python` instead of `python3` on Windows).
+
+Skill 會自動幫你跑這些；你也可以手動執行（Windows 上把 `python3` 換成 `python`）。
 
 Check providers:
 
