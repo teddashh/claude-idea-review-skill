@@ -25,16 +25,20 @@ Create a review workspace unless the user asks for inline-only output:
 └── report.html
 ```
 
+### Running the bundled scripts
+
+The helper scripts live in this skill's `scripts/` directory. Reference them by absolute path: substitute `<skill-dir>` with the folder that contains this `SKILL.md` (Claude Code provides the skill's location when it loads). Run them from the user's working directory so the `.idea-review/` workspace is created where the user expects it, not inside the skill folder. On Windows, use `python` instead of `python3`.
+
 Scaffold a workspace with:
 
 ```bash
-python3 "${SKILL_DIR}/scripts/init_review.py" --idea "<idea text>" --rounds 5
+python3 "<skill-dir>/scripts/init_review.py" --idea "<idea text>" --rounds 5
 ```
 
 Render final reports with:
 
 ```bash
-python3 "${SKILL_DIR}/scripts/render_report.py" <review-workspace>
+python3 "<skill-dir>/scripts/render_report.py" <review-workspace>
 ```
 
 ## Startup Checks
@@ -44,7 +48,7 @@ Before running the review:
 1. Check which native CLIs/accounts are usable:
 
    ```bash
-   python3 "${SKILL_DIR}/scripts/check_providers.py" --smoke
+   python3 "<skill-dir>/scripts/check_providers.py" --smoke
    ```
 
 2. If a CLI exists but cannot answer, say `測不到帳號` for that provider.
