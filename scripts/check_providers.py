@@ -86,11 +86,9 @@ def check_grok(smoke: bool) -> ProviderStatus:
     smoke_ok: bool | None = None
     note = "not checked"
     if cli and smoke:
+        # `grok -p "<prompt>"` is the headless form for both xAI's official
+        # Grok CLI and the community grok-dev CLI. There is no `grok exec`.
         smoke_ok, note = run_smoke([cli, "-p", "Reply OK only."])
-        if not smoke_ok:
-            fallback_ok, fallback_note = run_smoke([cli, "exec"], "Reply OK only.\n")
-            smoke_ok = fallback_ok
-            note = f"{note}\n\nfallback grok exec:\n{fallback_note}"
     elif not cli:
         note = "grok cli not found"
     return ProviderStatus(
@@ -98,7 +96,8 @@ def check_grok(smoke: bool) -> ProviderStatus:
         cli=cli,
         cli_found=bool(cli),
         smoke_ok=smoke_ok,
-        api_env=env_present(["XAI_API_KEY"]),
+        # Official Grok CLI reads XAI_API_KEY; community grok-dev uses GROK_API_KEY.
+        api_env=env_present(["XAI_API_KEY", "GROK_API_KEY"]),
         openrouter_env=bool(os.environ.get("OPENROUTER_API_KEY")),
         note=note,
     )
