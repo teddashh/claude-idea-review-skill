@@ -67,6 +67,9 @@ def check_gemini(smoke: bool) -> ProviderStatus:
     smoke_ok: bool | None = None
     note = "not checked"
     if cli and smoke:
+        # Both Antigravity's `agy` and Google's `gemini` take `-p "<prompt>"` for a
+        # one-shot headless answer. Caveat: `agy -p` can exit 0 with EMPTY stdout
+        # under a non-TTY (piped) run, so a failed smoke for `agy` is inconclusive.
         smoke_ok, note = run_smoke([cli, "-p", "Reply OK only."])
     elif not cli:
         note = "antigravity/gemini cli not found"
