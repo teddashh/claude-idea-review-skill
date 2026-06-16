@@ -71,6 +71,17 @@ def check_gemini(smoke: bool) -> ProviderStatus:
         # one-shot headless answer. Caveat: `agy -p` can exit 0 with EMPTY stdout
         # under a non-TTY (piped) run, so a failed smoke for `agy` is inconclusive.
         smoke_ok, note = run_smoke([cli, "-p", "Reply OK only."])
+        if smoke_ok is False and "gemini" in os.path.basename(cli).lower():
+            # gemini CLI present but unable to answer. Likely cause from 2026 on:
+            # Google moved the free/Pro/Ultra consumer tiers to Antigravity, so a
+            # plain `gemini` login no longer serves requests. gemini CLI still works
+            # with a paid Gemini API key or an Enterprise/Code Assist license.
+            note = (
+                f"{note}\n\nhint: gemini CLI found but did not answer. Google's 2026 "
+                "transition moved free/Pro/Ultra tiers to Antigravity (agy); gemini CLI "
+                "still works via a paid GEMINI_API_KEY or an Enterprise/Code Assist "
+                "license. Consider using agy, or supply a paid API key."
+            )
     elif not cli:
         note = "antigravity/gemini cli not found"
     return ProviderStatus(
