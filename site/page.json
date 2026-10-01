@@ -1,0 +1,489 @@
+{
+  "repo": "teddashh/claude-idea-review-skill",
+  "slug": "claude-idea-review-skill",
+  "name": "claude-idea-review-skill",
+  "mark": "IR",
+  "palette": "amber",
+  "default_branch": "main",
+  "verified": "2026-09-30",
+  "language": "Python",
+  "license": {
+    "spdx": "MIT",
+    "label": {
+      "en": "MIT License",
+      "zh": "MIT 授權"
+    },
+    "href": "LICENSE"
+  },
+  "title": {
+    "en": "A 5, 12, or 16-round idea review inside Claude Code",
+    "zh": "在 Claude Code 裡進行 5、12 或 16 輪的點子驗證"
+  },
+  "description": {
+    "en": "An open-source Claude Code skill that researches an idea, has four thinking personalities argue it over 5, 12, or 16 rounds, and saves a verdict, a kill criterion, and a printable report.",
+    "zh": "一個開源的 Claude Code skill：先研究你的點子，再讓四種思考個性辯論 5、12 或 16 輪，最後存下結論、停止條件與可列印的報告。"
+  },
+  "hero": {
+    "eyebrow": {
+      "en": "Claude Code skill · idea review",
+      "zh": "Claude Code skill · 點子驗證"
+    },
+    "headline": {
+      "en": "Pressure-test the idea <em>before</em> you build it.",
+      "zh": "先<em>挑戰</em>點子，<br>再決定做不做。"
+    },
+    "lede": {
+      "en": "Ask Claude Code to validate an idea. Four thinking personalities argue it over 5, 12, or 16 rounds, and Codex, Gemini, or Grok add their own analysis when their CLIs answer. You get a verdict with a kill criterion.",
+      "zh": "請 Claude Code 驗證一個點子，四種思考個性會辯論 5、12 或 16 輪；Codex、Gemini、Grok 的 CLI 能回應時，也會加入各自的分析。最後你拿到的是附停止條件的結論。"
+    },
+    "primary": {
+      "href": "#start",
+      "label": {
+        "en": "Install in one command",
+        "zh": "一行指令安裝"
+      }
+    },
+    "secondary": {
+      "href": "https://github.com/teddashh/claude-idea-review-skill",
+      "label": {
+        "en": "View source",
+        "zh": "查看原始碼"
+      }
+    },
+    "notes": [
+      "MIT",
+      "SKILL.md + Python 3.8+",
+      {
+        "en": "Made for the 自由工坊 community",
+        "zh": "為自由工坊社群而做"
+      }
+    ],
+    "visual": {
+      "type": "receipt",
+      "top": {
+        "en": "Startup check",
+        "zh": "啟動檢查"
+      },
+      "badge": {
+        "en": "5 rounds",
+        "zh": "5 輪"
+      },
+      "name": "check_providers.py --smoke",
+      "meta": {
+        "en": "3 optional providers · 45 s per smoke test",
+        "zh": "3 個選配 provider · 每個測試 45 秒逾時"
+      },
+      "rows": [
+        {
+          "state": "ok",
+          "label": {
+            "en": "Codex answers",
+            "zh": "Codex 有回應"
+          },
+          "detail": "codex exec · smoke_ok: true",
+          "side": "CLI"
+        },
+        {
+          "state": "warn",
+          "label": {
+            "en": "Gemini found, no answer",
+            "zh": "找到 Gemini，但沒有回應"
+          },
+          "detail": "agy -p · 測不到帳號",
+          "side": "key?"
+        },
+        {
+          "state": "wait",
+          "label": {
+            "en": "Grok not installed",
+            "zh": "沒有安裝 Grok"
+          },
+          "detail": "grok cli not found · Claude 模擬 Grok",
+          "side": "Claude"
+        },
+        {
+          "state": "ok",
+          "label": {
+            "en": "Web research saved",
+            "zh": "網路研究已存檔"
+          },
+          "detail": "input.md · Research Summary",
+          "side": "web"
+        }
+      ],
+      "footer": {
+        "left": {
+          "en": "Asks once for keys, never blocks",
+          "zh": "key 只問一次，不會卡住"
+        },
+        "right": {
+          "en": "Round 1 of 5",
+          "zh": "第 1 輪，共 5 輪"
+        }
+      }
+    }
+  },
+  "stats": [
+    {
+      "value": "5 / 12 / 16",
+      "label": {
+        "en": "Round options, 5 by default",
+        "zh": "可選輪數，預設 5 輪"
+      }
+    },
+    {
+      "value": "4",
+      "label": {
+        "en": "Thinking personalities per round",
+        "zh": "每輪的思考個性"
+      }
+    },
+    {
+      "value": "3",
+      "label": {
+        "en": "Optional providers it checks",
+        "zh": "會檢查的選配 provider"
+      }
+    },
+    {
+      "value": "9",
+      "label": {
+        "en": "Fields in the final verdict",
+        "zh": "最終結論的欄位"
+      }
+    }
+  ],
+  "flow": {
+    "kicker": {
+      "en": "How a review runs",
+      "zh": "驗證流程"
+    },
+    "title": {
+      "en": "Research, argue, then decide.",
+      "zh": "先研究，再辯論，最後下決定。"
+    },
+    "steps": [
+      {
+        "title": {
+          "en": "Check providers",
+          "zh": "檢查 provider"
+        },
+        "body": {
+          "en": "check_providers.py looks for codex, agy or gemini, and grok, and sends each one a one-line prompt. If a CLI is installed but cannot answer, Claude reports it as <code>測不到帳號</code> (account not reachable).",
+          "zh": "check_providers.py 會找 codex、agy 或 gemini，以及 grok，並各送一句測試提示。裝了卻無法回應的 CLI，Claude 會回報「測不到帳號」。"
+        }
+      },
+      {
+        "title": {
+          "en": "Research first",
+          "zh": "先做研究"
+        },
+        "body": {
+          "en": "With web tools available, Claude gathers competitors, pricing, demand, platform limits, and policy constraints. Later rounds must separate evidence from assumptions.",
+          "zh": "有網路工具時，Claude 會先蒐集競品、價格、需求、平台限制與政策限制。之後每一輪都要分清楚哪些是證據、哪些是假設。"
+        }
+      },
+      {
+        "title": {
+          "en": "Argue in rounds",
+          "zh": "分輪辯論"
+        },
+        "body": {
+          "en": "Round 1 is first positions, the middle rounds clash, and the last round converges. After round 1, every personality must answer an earlier point.",
+          "zh": "第 1 輪各自表態，中間幾輪互相攻防，最後一輪收斂。第 1 輪之後，每個個性都要回應先前的論點。"
+        }
+      },
+      {
+        "title": {
+          "en": "Decide and print",
+          "zh": "下結論、印報告"
+        },
+        "body": {
+          "en": "final.md holds the verdict, confidence, and kill criterion. report.html shows the conclusion first, then the idea and every round, with a Print / Save PDF button.",
+          "zh": "final.md 記下結論、信心分數與停止條件；report.html 先放結論，接著是點子與每一輪，並附上 Print / Save PDF 按鈕。"
+        }
+      }
+    ]
+  },
+  "capabilities": {
+    "kicker": {
+      "en": "What you get",
+      "zh": "你會得到什麼"
+    },
+    "title": {
+      "en": "A decision aid, not encouragement.",
+      "zh": "要的是決策依據，不是加油打氣。"
+    },
+    "intro": {
+      "en": "Most of the skill is instructions in SKILL.md. Three small Python scripts handle the mechanical parts: the provider check, the review folder, and the report.",
+      "zh": "這個 skill 大部分是 SKILL.md 裡的指示；三個小型 Python scripts 負責機械性的部分：provider 檢查、review 資料夾與報告。"
+    },
+    "items": [
+      {
+        "title": {
+          "en": "Four personalities, not four models",
+          "zh": "四種個性，不是四個模型"
+        },
+        "body": {
+          "en": "Optimist, Skeptic, Pragmatist, and Synthesizer are thinking styles, not departments, roles, or separate models. Each gets its own section in every round file.",
+          "zh": "Optimist、Skeptic、Pragmatist、Synthesizer 是思考風格，不是部門、職務，也不是不同的模型。每一輪的檔案裡，各自都有一段。"
+        },
+        "tag": "SKILL.md"
+      },
+      {
+        "title": {
+          "en": "Native when possible, labeled when simulated",
+          "zh": "能用原生就用，模擬時會標明"
+        },
+        "body": {
+          "en": "Codex, Gemini, and Grok are used through their CLIs when they answer. Otherwise Claude asks once for an API key; without one, it simulates that style and labels it, as in Claude 模擬 Codex (Claude simulating Codex).",
+          "zh": "Codex、Gemini、Grok 的 CLI 能回應時就直接使用；不行的話，Claude 只問一次 API key，沒有 key 就模擬該風格並標示出來，例如「Claude 模擬 Codex」。"
+        },
+        "tag": "scripts/check_providers.py"
+      },
+      {
+        "title": {
+          "en": "Files you can keep",
+          "zh": "留得下來的檔案"
+        },
+        "body": {
+          "en": "Unless you ask for inline-only output, each review writes input.md, one file per round, final.md, report.md, and a static report.html you can print or save as PDF.",
+          "zh": "除非你只要在對話裡看結果，每次 review 都會寫出 input.md、每輪一個檔案、final.md、report.md，以及可以列印或存成 PDF 的靜態 report.html。"
+        },
+        "tag": ".idea-review/"
+      }
+    ]
+  },
+  "decisions": {
+    "kicker": {
+      "en": "Design decisions",
+      "zh": "設計取捨"
+    },
+    "title": {
+      "en": "Why it is shaped this way.",
+      "zh": "為什麼這樣設計。"
+    },
+    "nav": false,
+    "items": [
+      {
+        "title": {
+          "en": "Personalities instead of model seats",
+          "zh": "用思考個性，而不是模型席位"
+        },
+        "body": {
+          "en": "The web version, <a href=\"https://teddashh.github.io/ai-brainstorming/\">ai-brainstorming</a>, gives five models a seat each through OpenRouter. Inside Claude Code, four personalities need no extra accounts, and other providers are used only when their CLI answers or you give a key.",
+          "zh": "網頁版的 <a href=\"https://teddashh.github.io/ai-brainstorming/?lang=zh-TW\">ai-brainstorming</a> 透過 OpenRouter 讓五個模型各坐一席。在 Claude Code 裡，四種思考個性不需要額外帳號，其他 provider 只在 CLI 能回應或你提供 key 時才會用到。"
+        }
+      },
+      {
+        "title": {
+          "en": "Ask once, then keep going",
+          "zh": "只問一次，然後繼續"
+        },
+        "body": {
+          "en": "A missing key should not stall a review. The skill asks one time whether you have a key and whether you prefer the provider's own API or OpenRouter; if none is given, it continues on Claude simulation instead of waiting.",
+          "zh": "缺 key 不該讓整個 review 停下來。這個 skill 只會問一次：你有沒有 key、要用原廠 API 還是 OpenRouter；沒有提供，就改用 Claude 模擬繼續跑，不會一直等。"
+        }
+      },
+      {
+        "title": {
+          "en": "Conclusion first, rounds after",
+          "zh": "先放結論，再放過程"
+        },
+        "body": {
+          "en": "The report opens with the verdict and kill criterion, so a reader who stops after one page still gets the decision. The rounds follow as the supporting record.",
+          "zh": "報告一開頭就是結論與停止條件，只看第一頁的人也拿得到決定；每一輪的內容放在後面，當作佐證紀錄。"
+        }
+      }
+    ]
+  },
+  "quickstart": {
+    "kicker": {
+      "en": "Start here",
+      "zh": "從這裡開始"
+    },
+    "title": {
+      "en": "Clone it, then ask.",
+      "zh": "裝好之後，直接問。"
+    },
+    "intro": {
+      "en": "You need Claude Code and Python 3.8+. A running session picks up the skill without a restart; if <code>~/.claude/skills/</code> is new, run <code>/reload-skills</code> once.",
+      "zh": "需要 Claude Code 與 Python 3.8 以上。正在執行的 session 不必重開就會載入這個 skill；如果 <code>~/.claude/skills/</code> 是新建立的，執行一次 <code>/reload-skills</code>。"
+    },
+    "primary": {
+      "href": "https://github.com/teddashh/claude-idea-review-skill/blob/main/README.md#install",
+      "label": {
+        "en": "Full install guide",
+        "zh": "英文 README 完整說明"
+      }
+    },
+    "secondary": {
+      "href": "https://github.com/teddashh/claude-idea-review-skill/blob/main/README.zh-TW.md#安裝",
+      "label": {
+        "en": "中文安裝說明",
+        "zh": "中文安裝說明"
+      }
+    },
+    "steps": [
+      {
+        "title": {
+          "en": "Install",
+          "zh": "安裝"
+        },
+        "body": {
+          "en": "Clone into your personal skills folder. For one project only, use that project's .claude/skills/ instead. On Windows, the README has a PowerShell version.",
+          "zh": "clone 到個人的 skills 資料夾；只想用在單一專案的話，改放到該專案的 .claude/skills/。Windows 的 PowerShell 版本請看 README。"
+        },
+        "code": "git clone \\\n  https://github.com/teddashh/claude-idea-review-skill.git \\\n  ~/.claude/skills/idea-review-panel"
+      },
+      {
+        "title": {
+          "en": "Ask",
+          "zh": "開口問"
+        },
+        "body": {
+          "en": "The skill triggers from its description, or call it with /idea-review-panel. Ask for 12 or 16 rounds for a deeper review.",
+          "zh": "skill 會依描述自動觸發，也可以用 /idea-review-panel 直接呼叫。想更深入，就指定 12 或 16 輪。"
+        },
+        "code": "幫我驗證這個點子：<你的 idea>\nValidate this idea: <your idea>"
+      },
+      {
+        "title": {
+          "en": "Read the verdict",
+          "zh": "看結論"
+        },
+        "body": {
+          "en": "Claude replies with the verdict and the file paths. Open report.html in the .idea-review/ folder to print it or save it as PDF.",
+          "zh": "Claude 會回覆結論與檔案路徑。打開 .idea-review/ 裡的 report.html，就能列印或存成 PDF。"
+        }
+      }
+    ]
+  },
+  "status": {
+    "kicker": {
+      "en": "Honest status",
+      "zh": "誠實的現況"
+    },
+    "title": {
+      "en": "Where it stands.",
+      "zh": "目前的樣子。"
+    },
+    "intro": {
+      "en": "Built over six commits from June 14 to 16, 2026, as an open-source skill for the 自由工坊 Discord community and the 個人 IP 陪跑計畫. The skill has not changed since, and there are no releases; install from main.",
+      "zh": "這是 2026 年 6 月 14 日到 16 日、共 6 個 commit 寫成的開源 skill，為「自由工坊」Discord 社群與個人 IP 陪跑計畫而做。之後 skill 本身沒有再更新，也沒有 release，請直接從 main 安裝。"
+    },
+    "works_title": {
+      "en": "Checked on 2026-09-30",
+      "zh": "2026-09-30 實測"
+    },
+    "works": [
+      {
+        "en": "init_review.py creates the timestamped folder, input.md, one file per round, and final.md; --rounds accepts only 5, 12, or 16",
+        "zh": "init_review.py 會建立帶時間戳記的資料夾、input.md、每輪一個檔案與 final.md；--rounds 只接受 5、12、16"
+      },
+      {
+        "en": "render_report.py writes report.md and a static report.html with a Print / Save PDF button and a page break between parts",
+        "zh": "render_report.py 會寫出 report.md 與靜態的 report.html，附 Print / Save PDF 按鈕，各部分之間會分頁"
+      },
+      {
+        "en": "check_providers.py finds codex, agy or gemini, and grok on PATH, and lists key variable names without their values",
+        "zh": "check_providers.py 能在 PATH 上找到 codex、agy 或 gemini，以及 grok，而且只列出 key 變數名稱、不印出值"
+      },
+      {
+        "en": "--smoke counts a CLI as answering only when it exits 0 with output; checked with stub CLIs",
+        "zh": "--smoke 只有在 CLI 以結束碼 0 結束、而且有輸出時才算通過；已用 stub CLI 測過"
+      },
+      {
+        "en": "Chinese ideas keep their characters in the folder name",
+        "zh": "中文點子的資料夾名稱會保留中文字"
+      },
+      {
+        "en": "The scripts use only the Python standard library",
+        "zh": "scripts 只用 Python 標準函式庫"
+      }
+    ],
+    "limits": [
+      {
+        "en": "The review is instructions in SKILL.md, not code, so its structure and quality depend on Claude following them",
+        "zh": "review 是 SKILL.md 裡的指示，不是程式碼，結構與品質取決於 Claude 有沒有照做"
+      },
+      {
+        "en": "No API client: if you provide a key, how the API gets called is left to Claude in that session",
+        "zh": "沒有 API 用戶端：提供 key 之後怎麼呼叫 API，交給當下 session 裡的 Claude"
+      },
+      {
+        "en": "A failed agy smoke test is inconclusive, because agy -p can exit 0 with empty output when piped",
+        "zh": "agy 測試失敗不能下定論，因為 agy -p 在管線中可能以結束碼 0 結束卻沒有輸出"
+      },
+      {
+        "en": "The report renderer does not support tables or code blocks, and always marks the HTML as zh-Hant",
+        "zh": "報告產生器不支援表格與程式碼區塊，HTML 也一律標示為 zh-Hant"
+      },
+      {
+        "en": "No tests, CI, or releases",
+        "zh": "沒有測試、CI 或 release"
+      }
+    ]
+  },
+  "facts": [
+    {
+      "label": {
+        "en": "Skill name",
+        "zh": "Skill 名稱"
+      },
+      "value": "idea-review-panel"
+    },
+    {
+      "label": {
+        "en": "License",
+        "zh": "授權"
+      },
+      "value": "MIT"
+    },
+    {
+      "label": {
+        "en": "Requires",
+        "zh": "需求"
+      },
+      "value": "Claude Code · Python 3.8+"
+    },
+    {
+      "label": {
+        "en": "Optional",
+        "zh": "選配"
+      },
+      "value": "Codex · Antigravity / Gemini · Grok"
+    },
+    {
+      "label": {
+        "en": "Last code change",
+        "zh": "最後程式更新"
+      },
+      "value": "2026-06-16"
+    },
+    {
+      "label": {
+        "en": "Verified",
+        "zh": "查核日期"
+      },
+      "value": "2026-09-30"
+    }
+  ],
+  "links": [
+    {
+      "href": "https://github.com/teddashh/claude-idea-review-skill/blob/main/README.zh-TW.md",
+      "label": "中文 README"
+    },
+    {
+      "href": "https://github.com/teddashh/claude-idea-review-skill/blob/main/SKILL.md",
+      "label": "SKILL.md"
+    },
+    {
+      "href": "https://teddashh.github.io/ai-brainstorming/",
+      "label": {
+        "en": "Sibling: ai-brainstorming",
+        "zh": "姊妹專案 ai-brainstorming"
+      }
+    }
+  ]
+}
