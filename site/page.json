@@ -5,7 +5,7 @@
   "mark": "IR",
   "palette": "amber",
   "default_branch": "main",
-  "verified": "2026-09-30",
+  "verified": "2026-10-06",
   "language": "Python",
   "license": {
     "spdx": "MIT",
@@ -466,7 +466,7 @@
         "en": "Verified",
         "zh": "查核日期"
       },
-      "value": "2026-09-30"
+      "value": "2026-10-06"
     }
   ],
   "links": [
@@ -483,6 +483,542 @@
       "label": {
         "en": "Sibling: ai-brainstorming",
         "zh": "姊妹專案 ai-brainstorming"
+      }
+    }
+  ],
+  "flows": [
+    {
+      "id": "review-files",
+      "after": "how",
+      "heading": {
+        "en": "Where the files come from",
+        "zh": "檔案從哪裡來"
+      },
+      "intro": {
+        "en": "Two scripts create the folder and the report. Claude writes the research and the arguments.",
+        "zh": "兩個腳本負責建立資料夾和報告。研究和論點由 Claude 寫入。"
+      },
+      "spec": {
+        "columns": [
+          [
+            0
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ],
+        "core": 1
+      },
+      "steps": [
+        {
+          "title": {
+            "en": "Ask Claude",
+            "zh": "提出點子"
+          },
+          "note": {
+            "en": "The skill runs when you ask Claude Code to validate an idea, or when you call /idea-review-panel, and it defaults to 5 rounds.",
+            "zh": "在 Claude Code 裡請它驗證一個點子，或呼叫 /idea-review-panel，就會用到這個 skill，預設 5 輪。"
+          },
+          "tone": "neutral",
+          "icon": "chat"
+        },
+        {
+          "title": {
+            "en": "Make folder",
+            "zh": "建立資料夾"
+          },
+          "note": {
+            "en": "init_review.py creates a timestamped folder under .idea-review, with input.md, one empty round file, and final.md.",
+            "zh": "init_review.py 在 .idea-review 下建立帶時間的資料夾，裡面有 input.md、每輪一個空檔，以及 final.md。"
+          },
+          "tone": "accent",
+          "icon": "doc"
+        },
+        {
+          "title": {
+            "en": "Write rounds",
+            "zh": "寫入各輪"
+          },
+          "note": {
+            "en": "SKILL.md tells Claude to save web research in input.md or round-01.md when tools exist, then fill the empty personality headings.",
+            "zh": "SKILL.md 要 Claude 在有工具時把網頁研究寫進 input.md 或 round-01.md，再填上原本空白的個性標題。"
+          },
+          "tone": "info",
+          "icon": "people"
+        },
+        {
+          "title": {
+            "en": "Render report",
+            "zh": "產出報告"
+          },
+          "note": {
+            "en": "render_report.py writes report.md and report.html from those files and does not invent the verdict.",
+            "zh": "render_report.py 用那些檔案寫出 report.md 和 report.html，不會自己編造結論。"
+          },
+          "tone": "neutral",
+          "icon": "window"
+        }
+      ],
+      "ticks": [
+        {
+          "en": "folder is timestamped",
+          "zh": "資料夾帶有時間"
+        },
+        {
+          "en": "round files start empty",
+          "zh": "輪次檔一開始是空的"
+        },
+        {
+          "en": "scripts skip the prose",
+          "zh": "腳本不寫論點"
+        }
+      ],
+      "caption": {
+        "en": "init_review.py names the folder with the current time and a slug from the first eight words of the idea, keeping Chinese characters and cutting at 64 characters. It writes the headings only. Claude is instructed to fill them, and render_report.py only assembles files that already exist.",
+        "zh": "init_review.py 用目前時間和點子前八個詞組成資料夾名稱，中文字會保留，並切到 64 字。它只寫標題。Claude 依照指示填內容，render_report.py 只組裝已經存在的檔案。"
+      }
+    },
+    {
+      "id": "provider-route",
+      "after": "how",
+      "heading": {
+        "en": "If a CLI is missing",
+        "zh": "CLI 不在時"
+      },
+      "intro": {
+        "en": "The smoke test reports which optional CLIs answer. The skill does not stop to wait for a key.",
+        "zh": "短句探測會回報哪些選用 CLI 有回答。這個 skill 不會停下來等金鑰。"
+      },
+      "spec": {
+        "columns": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "core": 1,
+        "lanes": [
+          "Vendor API",
+          "OpenRouter",
+          "Claude sim"
+        ],
+        "selectedLane": 2
+      },
+      "steps": [
+        {
+          "title": {
+            "en": "Check CLIs",
+            "zh": "檢查 CLI"
+          },
+          "note": {
+            "en": "With --smoke, codex is run as exec, agy or else gemini is run with -p, and grok is run with -p, and a pass needs exit 0 plus output within 45 seconds.",
+            "zh": "加上 --smoke 時，codex 用 exec，優先用 agy、否則用 gemini，兩者都帶 -p，grok 也帶 -p；要在 45 秒內以結束碼 0 並有輸出才算通過。"
+          },
+          "tone": "info",
+          "icon": "terminal"
+        },
+        {
+          "title": {
+            "en": "Ask once",
+            "zh": "只問一次"
+          },
+          "note": {
+            "en": "SKILL.md tells Claude to say 測不到帳號 when a CLI exists but does not answer, to ask once about a key, and then to continue.",
+            "zh": "SKILL.md 要 Claude 在 CLI 存在但沒有回答時說測不到帳號，金鑰只問一次，然後繼續。"
+          },
+          "tone": "accent",
+          "icon": "chat"
+        }
+      ],
+      "ticks": [
+        {
+          "en": "smoke uses one short line",
+          "zh": "探測只送一句"
+        },
+        {
+          "en": "asks once, then continues",
+          "zh": "只問一次就繼續"
+        },
+        {
+          "en": "fallback is labeled",
+          "zh": "退回時會標明"
+        }
+      ],
+      "caption": {
+        "en": "The highlighted lane is the fallback: without a key, Claude simulates that provider and labels it, for example Claude 模擬 Grok. Vendor API and OpenRouter are used only if you give a key, and this repo has no API client. A failed agy smoke test is inconclusive, because agy -p can exit 0 with empty output when it is not attached to a terminal.",
+        "zh": "反白的路線是退路：沒有金鑰時，Claude 會模擬該提供者並標明，例如 Claude 模擬 Grok。只有你提供金鑰時才走提供者 API 或 OpenRouter，而這個 repo 沒有 API 用戶端。agy 的探測失敗不能當成定論，因為 agy -p 在沒有終端機時可能以結束碼 0 結束卻沒有輸出。"
+      }
+    },
+    {
+      "id": "local-files",
+      "after": "how",
+      "heading": {
+        "en": "What stays on this machine",
+        "zh": "什麼留在這台機器"
+      },
+      "intro": {
+        "en": "The review folder is local. A smoke test is the step that hands a prompt to a CLI.",
+        "zh": "審查資料夾在本機。短句探測是把提示交給 CLI 的那一步。"
+      },
+      "spec": {
+        "columns": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "core": 1,
+        "boundaryAfter": 0
+      },
+      "zones": {
+        "en": [
+          "your files",
+          "the prompt",
+          "a CLI"
+        ],
+        "zh": [
+          "你的檔案",
+          "這句提示",
+          "某個 CLI"
+        ]
+      },
+      "steps": [
+        {
+          "title": {
+            "en": "Local files",
+            "zh": "本機檔案"
+          },
+          "note": {
+            "en": "The review files stay in the working directory, and check_providers.py prints key names but never their values.",
+            "zh": "審查檔案留在工作目錄，check_providers.py 只印出金鑰名稱，不會印出金鑰的值。"
+          },
+          "tone": "neutral",
+          "icon": "lock"
+        },
+        {
+          "title": {
+            "en": "Smoke call",
+            "zh": "送出探測"
+          },
+          "note": {
+            "en": "With --smoke, the script starts each found CLI and passes the prompt Reply OK only, with a 45 second limit.",
+            "zh": "加上 --smoke 時，腳本會啟動每個找到的 CLI，送入 Reply OK only，並以 45 秒為限。"
+          },
+          "tone": "info",
+          "icon": "terminal"
+        }
+      ],
+      "ticks": [
+        {
+          "en": "files stay in .idea-review",
+          "zh": "檔案留在 .idea-review"
+        },
+        {
+          "en": "key values are not printed",
+          "zh": "不會印出金鑰的值"
+        },
+        {
+          "en": "smoke hands off a prompt",
+          "zh": "探測會交出一句提示"
+        }
+      ],
+      "caption": {
+        "en": "Without --smoke the script only reports which CLIs and key names it found, and it sends no prompt. With --smoke it starts the CLI you already installed and passes one short line. The scripts use the Python standard library only.",
+        "zh": "沒有 --smoke 時，腳本只回報找到哪些 CLI 和金鑰名稱，不會送出提示。加上 --smoke 時，它會啟動你已經安裝的 CLI 並送入一句短文。這些腳本只用 Python 標準程式庫。"
+      }
+    },
+    {
+      "id": "report-out",
+      "after": "how",
+      "heading": {
+        "en": "What the report contains",
+        "zh": "報告裡有什麼"
+      },
+      "intro": {
+        "en": "render_report.py joins files that are already on disk. It does not call a model.",
+        "zh": "render_report.py 把磁碟上已有的檔案接起來。它不會呼叫模型。"
+      },
+      "spec": {
+        "columns": [
+          [
+            0
+          ],
+          [
+            1
+          ]
+        ],
+        "core": 1,
+        "sinks": [
+          2,
+          3
+        ]
+      },
+      "steps": [
+        {
+          "title": {
+            "en": "Read parts",
+            "zh": "讀取各檔"
+          },
+          "note": {
+            "en": "The script reads input.md and final.md, then every round file in sorted name order, and it exits if a required file is missing.",
+            "zh": "腳本讀取 input.md 和 final.md，再依檔名順序讀取每個輪次檔；必要檔案缺了就結束。"
+          },
+          "tone": "neutral",
+          "icon": "doc"
+        },
+        {
+          "title": {
+            "en": "Join order",
+            "zh": "依序接合"
+          },
+          "note": {
+            "en": "report.md places final.md first, then input.md, then the rounds, with a rule between the parts.",
+            "zh": "report.md 先放 final.md，再放 input.md，然後是各輪，各段之間有一條分隔線。"
+          },
+          "tone": "accent",
+          "icon": "ledger"
+        },
+        {
+          "title": {
+            "en": "Report file",
+            "zh": "報告檔"
+          },
+          "note": {
+            "en": "That joined Markdown is written to report.md in the review folder.",
+            "zh": "接好的 Markdown 寫入審查資料夾裡的 report.md。"
+          },
+          "tone": "neutral",
+          "icon": "doc"
+        },
+        {
+          "title": {
+            "en": "Print page",
+            "zh": "列印頁面"
+          },
+          "note": {
+            "en": "report.html is a static page with a Print / Save PDF button, always marked zh-Hant, and print CSS hides the button and starts each part on a new page.",
+            "zh": "report.html 是靜態頁，有 Print / Save PDF 按鈕，一律標成 zh-Hant；列印樣式會藏起按鈕，並讓每一段從新的一頁開始。"
+          },
+          "tone": "info",
+          "icon": "window"
+        }
+      ],
+      "ticks": [
+        {
+          "en": "verdict comes first",
+          "zh": "結論放在最前面"
+        },
+        {
+          "en": "then the idea and rounds",
+          "zh": "接著是點子和各輪"
+        },
+        {
+          "en": "HTML is always zh-Hant",
+          "zh": "HTML 一律是 zh-Hant"
+        }
+      ],
+      "caption": {
+        "en": "The printable page opens with the verdict because final.md is joined first. Headings, lists, paragraphs, and inline code, bold, italics, and links are rendered. Tables and fenced code blocks are not supported, so they are not drawn as tables or code.",
+        "zh": "可列印的頁面以結論開頭，因為接合時 final.md 在最前。標題、清單、段落，以及行內程式碼、粗體、斜體和連結會被轉成 HTML。表格和圍欄程式碼區塊沒有支援，所以不會畫成表格或程式碼。"
+      }
+    },
+    {
+      "id": "four-voices",
+      "after": "features",
+      "heading": {
+        "en": "Four headings, one round",
+        "zh": "一輪四個標題"
+      },
+      "intro": {
+        "en": "These are thinking styles, not separate models. The script only writes the four headings.",
+        "zh": "這四個是思考風格，不是四個模型。腳本只寫出四個標題。"
+      },
+      "spec": {
+        "columns": [
+          [
+            0,
+            1,
+            2,
+            3
+          ],
+          [
+            4
+          ]
+        ],
+        "core": 4
+      },
+      "steps": [
+        {
+          "title": {
+            "en": "Optimist",
+            "zh": "樂觀者"
+          },
+          "note": {
+            "en": "The Optimist heading is for the strongest version of the idea and why it could work.",
+            "zh": "Optimist 這一段要寫出點子最強的版本，以及它為什麼可能成立。"
+          },
+          "tone": "neutral",
+          "icon": "spark"
+        },
+        {
+          "title": {
+            "en": "Skeptic",
+            "zh": "懷疑者"
+          },
+          "note": {
+            "en": "The Skeptic heading is for weak assumptions, hidden costs, and reasons it could fail.",
+            "zh": "Skeptic 這一段要寫出脆弱假設、隱藏成本，以及它可能失敗的原因。"
+          },
+          "tone": "warn",
+          "icon": "shield"
+        },
+        {
+          "title": {
+            "en": "Pragmatist",
+            "zh": "務實者"
+          },
+          "note": {
+            "en": "The Pragmatist heading is for tests, an MVP shape, constraints, and trade-offs.",
+            "zh": "Pragmatist 這一段要寫成可做的測試、MVP 的形狀、限制和取捨。"
+          },
+          "tone": "info",
+          "icon": "gear"
+        },
+        {
+          "title": {
+            "en": "Synthesizer",
+            "zh": "統合者"
+          },
+          "note": {
+            "en": "The Synthesizer heading is for the disagreement and for what evidence would change the conclusion.",
+            "zh": "Synthesizer 這一段要整理分歧，並寫出什麼證據會改變結論。"
+          },
+          "tone": "neutral",
+          "icon": "people"
+        },
+        {
+          "title": {
+            "en": "Round file",
+            "zh": "該輪檔案"
+          },
+          "note": {
+            "en": "init_review.py writes these four headings into every rounds/round-NN.md, and SKILL.md tells Claude to fill them.",
+            "zh": "init_review.py 在每個 rounds/round-NN.md 寫入這四個標題，SKILL.md 再要 Claude 填上內容。"
+          },
+          "tone": "accent",
+          "icon": "doc"
+        }
+      ],
+      "ticks": [
+        {
+          "en": "four headings per round",
+          "zh": "每輪四個標題"
+        },
+        {
+          "en": "styles, not model seats",
+          "zh": "是風格，不是席位"
+        },
+        {
+          "en": "Claude fills the prose",
+          "zh": "內文由 Claude 填寫"
+        }
+      ],
+      "caption": {
+        "en": "Every round file is scaffolded with Optimist, Skeptic, Pragmatist, and Synthesizer, in that order. They are instructions for one Claude session, not four model calls. A missing provider can be simulated and labeled, but that label is not one of these four headings.",
+        "zh": "每個輪次檔都會先放上 Optimist、Skeptic、Pragmatist、Synthesizer，順序固定。它們是給同一次 Claude 工作階段的指示，不是四次模型呼叫。缺少的提供者可以被模擬並標明，但那個標籤不是這四個標題之一。"
+      }
+    },
+    {
+      "id": "round-cycle",
+      "after": "features",
+      "heading": {
+        "en": "How the rounds proceed",
+        "zh": "輪次怎麼往下走"
+      },
+      "intro": {
+        "en": "SKILL.md sets the round rules. The scripts do not check that Claude followed them.",
+        "zh": "輪次規則寫在 SKILL.md。腳本不會檢查 Claude 有沒有照做。"
+      },
+      "spec": {
+        "columns": [
+          [
+            0
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "core": 1,
+        "loop": true
+      },
+      "steps": [
+        {
+          "title": {
+            "en": "First positions",
+            "zh": "第一輪"
+          },
+          "note": {
+            "en": "Round 1 asks Optimist for the strongest case, Skeptic for the likely failure, Pragmatist for the smallest test, and Synthesizer for the decision tension.",
+            "zh": "第 1 輪要 Optimist 提出最有利的說法，Skeptic 指出可能的失敗，Pragmatist 提出最小的測試，Synthesizer 寫出決策上的張力。"
+          },
+          "tone": "neutral",
+          "icon": "chat"
+        },
+        {
+          "title": {
+            "en": "Answer back",
+            "zh": "回應前文"
+          },
+          "note": {
+            "en": "After round 1, SKILL.md requires each personality to reference at least one earlier point from another personality.",
+            "zh": "第 1 輪之後，SKILL.md 要求每個個性至少回應另一個個性先前的一個論點。"
+          },
+          "tone": "accent",
+          "icon": "people"
+        },
+        {
+          "title": {
+            "en": "Final commit",
+            "zh": "最後一輪"
+          },
+          "note": {
+            "en": "In the final round each personality commits to build, validate, pivot, or stop.",
+            "zh": "最後一輪，每個個性要在做、先驗證、轉向或停止之中選一個。"
+          },
+          "tone": "warn",
+          "icon": "check"
+        }
+      ],
+      "ticks": [
+        {
+          "en": "round 1 is positions",
+          "zh": "第 1 輪先表態"
+        },
+        {
+          "en": "later rounds must reply",
+          "zh": "之後各輪要回應"
+        },
+        {
+          "en": "stops at 5, 12, or 16",
+          "zh": "停在 5、12 或 16"
+        }
+      ],
+      "caption": {
+        "en": "The return rail is the next round, and it stops after the chosen count of 5, 12, or 16. The last round's commitments are build, validate, pivot, or stop. final.md then records one verdict, worth_building, validate_first, pivot, or not_worth_building, plus a confidence from 0 to 100 and a kill criterion.",
+        "zh": "回程代表下一輪，選了 5、12 或 16 輪就停。最後一輪的承諾是做、先驗證、轉向或停止。final.md 再記下一個結論：worth_building、validate_first、pivot 或 not_worth_building，以及 0 到 100 的信心和一條停止條件。"
       }
     }
   ]
